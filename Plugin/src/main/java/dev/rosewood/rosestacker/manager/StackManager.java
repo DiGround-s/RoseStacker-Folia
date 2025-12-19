@@ -2,7 +2,6 @@ package dev.rosewood.rosestacker.manager;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.manager.Manager;
-import dev.rosewood.rosegarden.scheduler.task.ScheduledTask;
 import dev.rosewood.rosestacker.config.SettingKey;
 import dev.rosewood.rosestacker.hook.WorldGuardHook;
 import dev.rosewood.rosestacker.nms.spawner.SpawnerType;
@@ -28,6 +27,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
+
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -80,7 +81,7 @@ public class StackManager extends Manager implements StackingLogic {
         long autosaveFrequency = SettingKey.AUTOSAVE_FREQUENCY.get();
         if (autosaveFrequency > 0) {
             long interval = autosaveFrequency * 20 * 60;
-            this.autosaveTask = this.rosePlugin.getScheduler().runTaskTimer(() -> this.saveAllData(false), interval, interval);
+            this.autosaveTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(this.rosePlugin, (runnable) -> this.saveAllData(false), interval, interval);
         }
 
         String multikillAmountValue = SettingKey.ENTITY_MULTIKILL_AMOUNT.get();

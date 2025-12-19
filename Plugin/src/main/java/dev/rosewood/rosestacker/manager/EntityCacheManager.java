@@ -2,7 +2,6 @@ package dev.rosewood.rosestacker.manager;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.manager.Manager;
-import dev.rosewood.rosegarden.scheduler.task.ScheduledTask;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.rosestacker.nms.NMSAdapter;
 import dev.rosewood.rosestacker.nms.NMSHandler;
@@ -17,6 +16,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.function.Predicate;
+
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -37,7 +39,7 @@ public class EntityCacheManager extends Manager {
 
     @Override
     public void reload() {
-        this.refreshTask = this.rosePlugin.getScheduler().runTaskTimer(this::refresh, 5L, 60L);
+        this.refreshTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(this.rosePlugin, (runnable) -> refresh(), 5L, 60L);
     }
 
     @Override

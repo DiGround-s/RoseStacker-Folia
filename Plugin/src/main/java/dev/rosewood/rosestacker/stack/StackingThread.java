@@ -4,7 +4,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.compatibility.CompatibilityAdapter;
-import dev.rosewood.rosegarden.scheduler.task.ScheduledTask;
 import dev.rosewood.rosestacker.config.SettingKey;
 import dev.rosewood.rosestacker.event.EntityStackClearEvent;
 import dev.rosewood.rosestacker.event.EntityStackEvent;
@@ -47,6 +46,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -99,18 +100,21 @@ public class StackingThread implements StackingLogic, AutoCloseable {
         this.disabled = this.stackManager.isWorldDisabled(targetWorld);
 
         if (!this.disabled) {
-            this.entityStackTask = rosePlugin.getScheduler().runTaskTimerAsync(this::stackEntities, 5L, SettingKey.STACK_FREQUENCY.get());
-            this.itemStackTask = rosePlugin.getScheduler().runTaskTimerAsync(this::stackItems, 5L, SettingKey.ITEM_STACK_FREQUENCY.get());
-            this.nametagTask = rosePlugin.getScheduler().runTaskTimerAsync(this::processNametags, 5L, SettingKey.NAMETAG_UPDATE_FREQUENCY.get());
-            this.hologramTask = rosePlugin.getScheduler().runTaskTimerAsync(this::updateHolograms, 5L, SettingKey.HOLOGRAM_UPDATE_FREQUENCY.get());
+            this.entityStackTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(this.rosePlugin, (runnable) -> stackEntities(), 5L, SettingKey.STACK_FREQUENCY.get());
+            this.itemStackTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(this.rosePlugin, (runnable) -> stackItems(), 5L, SettingKey.ITEM_STACK_FREQUENCY.get());
+            this.nametagTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(this.rosePlugin, (runnable) -> processNametags(), 5L, SettingKey.NAMETAG_UPDATE_FREQUENCY.get());
+            this.hologramTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(this.rosePlugin, (runnable) -> updateHolograms(), 5L, SettingKey.HOLOGRAM_UPDATE_FREQUENCY.get());
+
 
             long unstackFrequency = SettingKey.UNSTACK_FREQUENCY.get();
             if (unstackFrequency > 0)
-                this.entityUnstackTask = rosePlugin.getScheduler().runTaskTimerAsync(this::unstackEntities, 5L, unstackFrequency);
+                this.entityUnstackTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(this.rosePlugin, (runnable) -> unstackEntities(), 5L, unstackFrequency);
+
 
             long cleanupFrequency = SettingKey.ENTITY_RESCAN_FREQUENCY.get();
             if (cleanupFrequency > 0)
-                this.entityCleanupTask = rosePlugin.getScheduler().runTaskTimer(this::cleanupOrphanedEntities, 5L, cleanupFrequency);
+                this.entityCleanupTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(this.rosePlugin, (runnable) -> cleanupOrphanedEntities(), 5L, cleanupFrequency);
+
         }
 
         this.stackedEntities = new ConcurrentHashMap<>();

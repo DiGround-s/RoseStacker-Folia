@@ -1,8 +1,6 @@
 package dev.rosewood.rosestacker.hook;
 
-import com.magmaguy.elitemobs.entitytracker.EntityTracker;
-import com.nisovin.shopkeepers.api.ShopkeepersAPI;
-import com.songoda.epicbosses.EpicBosses;
+
 import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import dev.rosewood.rosestacker.config.SettingKey;
 import io.hotmail.com.jacob_vejvoda.infernal_mobs.infernal_mobs;
@@ -181,17 +179,11 @@ public class NPCsHook {
         if (citizensEnabled() && CitizensAPI.hasImplementation())
             npc = CitizensAPI.getNPCRegistry().isNPC(entity);
 
-        if (!npc && shopkeepersEnabled() && ShopkeepersAPI.isEnabled())
-            npc = ShopkeepersAPI.getShopkeeperRegistry().isShopkeeper(entity);
+
 
         if (!npc && mythicMobsEnabled() && !SettingKey.MISC_MYTHICMOBS_ALLOW_STACKING.get())
             npc = MythicBukkit.inst().getAPIHelper().isMythicMob(entity);
 
-        if (!npc && epicBossesEnabled())
-            npc = EpicBosses.getInstance().getBossEntityManager().getActiveBossHolder(entity) != null;
-
-        if (!npc && eliteMobsEnabled())
-            npc = EntityTracker.isEliteMob(entity) && EntityTracker.isNPCEntity(entity);
 
         if (!npc && bossEnabled())
             npc = entity.hasMetadata("Boss_V4");

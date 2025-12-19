@@ -13,6 +13,8 @@ import dev.rosewood.rosestacker.utils.ItemUtils;
 import dev.rosewood.rosestacker.utils.StackerUtils;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Container;
@@ -138,7 +140,7 @@ public class ItemListener implements Listener {
             event.setCancelled(true);
 
             if (SettingKey.ENTITY_DONT_STACK_IF_HAS_EQUIPMENT.get()) {
-                this.rosePlugin.getScheduler().runTask(() -> {
+                Bukkit.getGlobalRegionScheduler().run(this.rosePlugin, (runnable) -> {
                     StackedEntity stackedEntity = this.stackManager.getStackedEntity(entity);
                     if (stackedEntity != null)
                         this.stackManager.tryUnstackEntity(stackedEntity);

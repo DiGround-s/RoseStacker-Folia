@@ -31,8 +31,6 @@ import org.bukkit.entity.Camel;
 import org.bukkit.entity.Cat;
 import org.bukkit.entity.ChestedHorse;
 import org.bukkit.entity.Chicken;
-import org.bukkit.entity.CopperGolem;
-import org.bukkit.entity.CopperGolem.Oxidizing;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
@@ -71,7 +69,7 @@ import org.bukkit.entity.Vex;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Wolf;
 import org.bukkit.entity.Zombie;
-import org.bukkit.entity.ZombieNautilus;
+import org.bukkit.entity.Drowned;
 import org.bukkit.entity.ZombieVillager;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
@@ -214,13 +212,10 @@ public final class StackConditions {
         int versionNumber = NMSUtil.getVersionNumber();
         int minorVersionNumber = NMSUtil.getMinorVersionNumber();
         if (versionNumber > 21 || (versionNumber == 21 && minorVersionNumber >= 11)) {
-            registerConfig(ZombieNautilus.class, "different-type", false, EntityStackComparisonResult.DIFFERENT_TYPES, (entity1, entity2) -> entity1.getVariant() != entity2.getVariant());
+            registerConfig(Drowned.class, "different-type", false, EntityStackComparisonResult.DIFFERENT_TYPES, (entity1, entity2) -> entity1 != entity2);
         }
 
-        if ((versionNumber > 21 || (versionNumber == 21 && minorVersionNumber >= 9)) && NMSUtil.isPaper()) { // API methods are different on Spigot, ignore them
-            registerConfig(CopperGolem.class, "different-oxidization", false, EntityStackComparisonResult.DIFFERENT_WEATHERING, (entity1, entity2) -> entity1.getWeatheringState() != entity2.getWeatheringState());
-            registerConfig(CopperGolem.class, "different-weathering", false, EntityStackComparisonResult.DIFFERENT_OXIDIZATION, (entity1, entity2) -> entity1.getOxidizing() == Oxidizing.waxed() ^ entity2.getOxidizing() == Oxidizing.waxed());
-        }
+
 
         if (versionNumber > 21 || (versionNumber == 21 && minorVersionNumber >= 5)) {
             registerConfig(Chicken.class, "different-types", false, EntityStackComparisonResult.DIFFERENT_TYPES, (entity1, entity2) -> entity1.getVariant() != entity2.getVariant());

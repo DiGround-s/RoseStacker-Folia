@@ -1,4 +1,5 @@
 name: RoseStacker
+folia-supported: true
 version: '@version@'
 authors: [Esophose]
 website: https://www.spigotmc.org/resources/82729/

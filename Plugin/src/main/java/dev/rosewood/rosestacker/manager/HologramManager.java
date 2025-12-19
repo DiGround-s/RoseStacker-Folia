@@ -2,7 +2,6 @@ package dev.rosewood.rosestacker.manager;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.manager.Manager;
-import dev.rosewood.rosegarden.scheduler.task.ScheduledTask;
 import dev.rosewood.rosestacker.config.SettingKey;
 import dev.rosewood.rosestacker.nms.NMSAdapter;
 import dev.rosewood.rosestacker.nms.NMSHandler;
@@ -12,6 +11,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -41,7 +42,7 @@ public class HologramManager extends Manager implements Listener {
 
     @Override
     public void reload() {
-        this.watcherTask = this.rosePlugin.getScheduler().runTaskTimerAsync(this::updateWatchers, 0L, SettingKey.HOLOGRAM_UPDATE_FREQUENCY.get());
+        this.watcherTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(this.rosePlugin, (runnable) -> updateWatchers(), 1L, SettingKey.HOLOGRAM_UPDATE_FREQUENCY.get());
         this.renderDistanceSqrd = SettingKey.BLOCK_DYNAMIC_TAG_VIEW_RANGE.get() * SettingKey.BLOCK_DYNAMIC_TAG_VIEW_RANGE.get();
         this.hideThroughWalls = SettingKey.BLOCK_DYNAMIC_TAG_VIEW_RANGE_WALL_DETECTION_ENABLED.get();
     }

@@ -33,7 +33,6 @@ import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Mannequin;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Raider;
