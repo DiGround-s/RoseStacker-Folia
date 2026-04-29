@@ -849,10 +849,10 @@ public class StackingThread implements StackingLogic, AutoCloseable {
 
         if (!stackedSpawners.isEmpty() || !stackedBlocks.isEmpty()) {
             this.stackChunkData.put(chunk, new StackChunkData(stackedSpawners, stackedBlocks));
-            ThreadUtils.runAsync(() -> {
-                stackedSpawners.values().forEach(StackedSpawner::updateDisplay);
-                stackedBlocks.values().forEach(StackedBlock::updateDisplay);
-            });
+            for (StackedSpawner spawner : stackedSpawners.values())
+                Bukkit.getRegionScheduler().run(this.rosePlugin, spawner.getBlock().getLocation(), task -> spawner.updateDisplay());
+            for (StackedBlock block : stackedBlocks.values())
+                Bukkit.getRegionScheduler().run(this.rosePlugin, block.getBlock().getLocation(), task -> block.updateDisplay());
         }
     }
 
@@ -894,11 +894,15 @@ public class StackingThread implements StackingLogic, AutoCloseable {
             }
         }
 
-        if (!stackedEntities.isEmpty() || !stackedItems.isEmpty()) {
-            ThreadUtils.runAsync(() -> {
-                stackedEntities.forEach(StackedEntity::updateDisplay);
-                stackedItems.forEach(StackedItem::updateDisplay);
-            });
+        for (StackedEntity stackedEntity : stackedEntities) {
+            LivingEntity entity = stackedEntity.getEntity();
+            if (entity != null)
+                entity.getScheduler().run(this.rosePlugin, task -> stackedEntity.updateDisplay(), null);
+        }
+        for (StackedItem stackedItem : stackedItems) {
+            Item item = stackedItem.getItem();
+            if (item != null)
+                item.getScheduler().run(this.rosePlugin, task -> stackedItem.updateDisplay(), null);
         }
     }
 
